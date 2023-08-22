@@ -159,9 +159,23 @@ table(apply(temp3,1,function(x) sum(is.na(x))))
 #5000
 
 #####
-sample.stdevs <- apply(beta_values_ALL_balanced_CpGs_NONANS, 2, sd)
+sample.stdevs.orig <- apply(data, 2, sd)
+sample.stdevs.tum <- apply(temp1, 2, sd)
+sample.stdevs.norm <- apply(temp2, 2, sd)
 
+stdevs.df <- as.data.frame(cbind(orig=sample.stdevs.orig, tum=sample.stdevs.tum, norm=sample.stdevs.norm))
+            
+sample.means.orig <- apply(data, 2, mean)
+sample.means.tum <- apply(temp1, 2, mean)
+sample.means.norm <- apply(temp2, 2, mean)
 
+means.df <- as.data.frame(cbind(orig=sample.means.orig, tum=sample.means.tum, norm=sample.means.norm))
+ 
+ggplot(stdevs.df, aes(x = orig, y = tum)) + geom_point(size=1)
+ggplot(stdevs.df, aes(x = orig, y = norm)) + geom_point(size=1)
+
+ggplot(means.df, aes(x = orig, y = tum)) + geom_point(size=1)
+hist(means.df$norm)
 #####
 
             
