@@ -95,17 +95,30 @@ clusterEvalQ(cl, {
   library("flexmix")
 })
 
-data <- betaUnadjusted[1:100, ]
+#TCGA_beta_values_balanced_CpGs = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/ALL/beta_values_ALL_balanced_CpGs.txt', sep='\t', header=TRUE, row.names=1)
+TCGA_beta_values_balanced_CpGs = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/beta_values_ALL_balanced_CpGs_NONANS.txt', sep='\t', header=TRUE, row.names=1)
+
+CPE_purity = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/CPE_purity.txt', sep='\t', row.names=1, header=TRUE)
+good.samples = rownames(CPE_purity)[!is.na(CPE_purity)]
+CPE_purity_vector = CPE_purity[good.samples, ]
+names(CPE_purity_vector) = make.names(good.samples)
+
+#purity <- purity_vector
+#data <- betaUnadjusted[1:100, ]
+purity <- CPE_purity_vector
+data <- TCGA_beta_values_balanced_CpGs[, names(purity)]
 
 ##add rng seed to each row and pass to each paralell instance
 betaRun<-cbind(seed=1:nrow(data),data)
 betaNames<-colnames(data)
 
 #clusterSetRNGStream(cl, 20200918) ##using this way to pass seed will not make exactly replicable..
-res<-parRapply(cl = cl, betaRun, adjustBeta,purity=purityVector,snames=betaNames,seed=TRUE)
+res<-parRapply(cl = cl, betaRun, adjustBeta,purity=purity,snames=betaNames,seed=TRUE)
 
-res2<-parRapply(cl = cl, betaRun, adjustBeta,purity=purityVector,snames=betaNames,seed=TRUE)
+#res <- adjustBeta(methylation=data[1, ],purity=purity,snames=betaNames,nmax=3,nrep=3,seed=FALSE)
 
+res2<-parRapply(cl = cl, betaRun, adjustBeta,purity=purity,snames=betaNames,seed=TRUE)
+                    
 table(unlist(lapply(res,function(x) x$n.groups)))
   #  2    3 
   # 20 4980 
@@ -133,6 +146,8 @@ temp1<-do.call("rbind",lapply(res,function(x) x$y.tum))
 temp2<-do.call("rbind",lapply(res,function(x) x$y.norm))
 temp3<-do.call("rbind",lapply(res,function(x) x$y.orig))
 
+all(abs(temp3 - data) < 0.001)
+                              
 table(apply(temp1,1,function(x) sum(is.na(x))))
 #   0
 #5000
@@ -143,6 +158,13 @@ table(apply(temp3,1,function(x) sum(is.na(x))))
 #   0
 #5000
 
+#####
+sample.stdevs <- apply(beta_values_ALL_balanced_CpGs_NONANS, 2, sd)
+
+
+#####
+
+            
 table(cpgAnnotations[rownames(temp1),"chr"])
 #  chr1 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19  chr2 chr20 
 #   545   269   212   254   155   147    99   170   273    68   205   362   129 
