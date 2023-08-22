@@ -18,7 +18,7 @@
 ##Set directory paths
 
 ##set/create own home directory below:
-HOME<-"~/path/to/git"
+HOME<-"~/Documents/Duke/lab/adjustBetas"
 
 ################################################################################
 ##load required packages
@@ -95,9 +95,11 @@ clusterEvalQ(cl, {
   library("flexmix")
 })
 
+data <- betaUnadjusted[1:100, ]
+
 ##add rng seed to each row and pass to each paralell instance
-betaRun<-cbind(seed=1:nrow(betaUnadjusted),betaUnadjusted)
-betaNames<-colnames(betaUnadjusted)
+betaRun<-cbind(seed=1:nrow(data),data)
+betaNames<-colnames(data)
 
 #clusterSetRNGStream(cl, 20200918) ##using this way to pass seed will not make exactly replicable..
 res<-parRapply(cl = cl, betaRun, adjustBeta,purity=purityVector,snames=betaNames,seed=TRUE)
