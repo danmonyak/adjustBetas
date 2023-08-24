@@ -151,5 +151,5 @@ beta_values_NORMAL_balanced_CpGs <- do.call("rbind",lapply(res,function(x) x$y.n
 #temp3<-do.call("rbind",lapply(res,function(x) x$y.orig))
 
 
-write.table(temp1, file.path(proj_dir, 'beta_values_TUMOR_balanced_CpGs.txt'), quote=FALSE, sep='\t')
-write.table(temp1, file.path(proj_dir, 'beta_values_NORMAL_balanced_CpGs.txt'), quote=FALSE, sep='\t')
+write.table(beta_values_TUMOR_balanced_CpGs, file.path(proj_dir, 'beta_values_TUMOR_balanced_CpGs.txt'), quote=FALSE, sep='\t')
+write.table(beta_values_NORMAL_balanced_CpGs, file.path(proj_dir, 'beta_values_NORMAL_balanced_CpGs.txt'), quote=FALSE, sep='\t')
