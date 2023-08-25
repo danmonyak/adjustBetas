@@ -50,7 +50,7 @@ source(paste0(HOME,"/function_correctBetas.r"))
 ### Load reduced data set, do correction and plot heatmap
 
 ##data set reduced to top 5000 CpGs in set of 630 TCGA BRCA tumors
-load("workspace_tcgaBrca_top5000.RData")
+#load("workspace_tcgaBrca_top5000.RData")
 
 ls()
 # [1] "adjustBeta"        "betaUnadjusted"    "cpgAnnotations"    "purityVector"     
@@ -97,12 +97,14 @@ clusterEvalQ(cl, {
 
 
 indir <- '/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection'
-proj_dir <- file.path(indir, 'adjustBetas')
+#proj_dir <- file.path(indir, 'adjustBetas')
+proj_dir <- file.path(indir, 'desmedt')
 
-#TCGA_beta_values_balanced_CpGs = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/ALL/beta_values_ALL_balanced_CpGs.txt', sep='\t', header=TRUE, row.names=1)
-TCGA_beta_values_balanced_CpGs = read.table(file.path(indir, 'beta_values_ALL_balanced_CpGs_NONANS.txt'), sep='\t', header=TRUE, row.names=1)
+#beta_values_balanced_CpGs = read.table(file.path(indir, 'beta_values_ALL_balanced_CpGs_NONANS.txt'), sep='\t', header=TRUE, row.names=1)
+beta_values_balanced_CpGs = read.table(file.path(proj_dir, 'adjustBetas', 'beta_values_balanced_CpGs_NONANS.txt'), sep='\t', header=TRUE, row.names=1)
 
-CPE_purity = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/CPE_purity.txt', sep='\t', row.names=1, header=TRUE)
+#CPE_purity = read.table('/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection/CPE_purity.txt', sep='\t', row.names=1, header=TRUE)
+CPE_purity = read.table(file.path(proj_dir, 'LUMP_purity.txt'), sep='\t', row.names=1, header=TRUE)
 good.samples = rownames(CPE_purity)[!is.na(CPE_purity)]
 CPE_purity_vector = CPE_purity[good.samples, ]
 names(CPE_purity_vector) = make.names(good.samples)
@@ -110,7 +112,7 @@ names(CPE_purity_vector) = make.names(good.samples)
 #purity <- purity_vector
 #data <- betaUnadjusted[1:100, ]
 purity <- CPE_purity_vector
-data <- TCGA_beta_values_balanced_CpGs[, names(purity)]
+data <- beta_values_balanced_CpGs[, names(purity)]
 
 ##add rng seed to each row and pass to each paralell instance
 betaRun<-cbind(seed=1:nrow(data),data)
@@ -122,7 +124,7 @@ res<-parRapply(cl = cl, betaRun, adjustBeta,purity=purity,snames=betaNames,seed=
 #res <- adjustBeta(methylation=data[1, ],purity=purity,snames=betaNames,nmax=3,nrep=3,seed=FALSE)
 
 res2<-parRapply(cl = cl, betaRun, adjustBeta,purity=purity,snames=betaNames,seed=TRUE)
-                    
+
 table(unlist(lapply(res,function(x) x$n.groups)))
   #  2    3 
   # 20 4980 
