@@ -98,7 +98,9 @@ clusterEvalQ(cl, {
 
 indir <- '/Users/danielmonyak/Library/CloudStorage/Box-Box/PROJECT 06023: MolClocks/Monyak Data/CpG Site Selection'
 #proj_dir <- file.path(indir, 'adjustBetas')
+#outdir <- proj_dir
 proj_dir <- file.path(indir, 'desmedt')
+outdir <- file.path(indir, 'desmedt', 'adjustBetas')
 
 #beta_values_balanced_CpGs = read.table(file.path(indir, 'beta_values_ALL_balanced_CpGs_NONANS.txt'), sep='\t', header=TRUE, row.names=1)
 beta_values_balanced_CpGs = read.table(file.path(proj_dir, 'adjustBetas', 'beta_values_balanced_CpGs_NONANS.txt'), sep='\t', header=TRUE, row.names=1)
@@ -153,5 +155,5 @@ beta_values_NORMAL_balanced_CpGs <- do.call("rbind",lapply(res,function(x) x$y.n
 #temp3<-do.call("rbind",lapply(res,function(x) x$y.orig))
 
 
-write.table(beta_values_TUMOR_balanced_CpGs, file.path(proj_dir, 'beta_values_TUMOR_balanced_CpGs.txt'), quote=FALSE, sep='\t')
-write.table(beta_values_NORMAL_balanced_CpGs, file.path(proj_dir, 'beta_values_NORMAL_balanced_CpGs.txt'), quote=FALSE, sep='\t')
+write.table(beta_values_TUMOR_balanced_CpGs, file.path(outdir, 'beta_values_TUMOR_balanced_CpGs.txt'), quote=FALSE, sep='\t')
+write.table(beta_values_NORMAL_balanced_CpGs, file.path(outdir, 'beta_values_NORMAL_balanced_CpGs.txt'), quote=FALSE, sep='\t')
